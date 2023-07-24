@@ -22,8 +22,7 @@ class CoinedWordViewController: UIViewController {
     @IBOutlet var answerImageView: UIImageView!
     
     let question = ["상남자" : "남자다운 남자", "하남자" : "상남자의 반대말", "폼 미쳤다" : "무언가 범상치 않다"]
-    
-    
+        
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -41,9 +40,22 @@ class CoinedWordViewController: UIViewController {
         
         answerImageView.image = UIImage(named: "background")
         
-        if let value = question[searchTextField.text!] {
+        guard let title = searchTextField.text else {
+            return
+        }
+        
+        if title == "" || title.count <= 1{
+            let alert = UIAlertController(title: "두 글자 이상 입력해주세요.", message: nil, preferredStyle: .alert)
+            let cancel = UIAlertAction(title: "취소", style: .cancel)
+            let ok = UIAlertAction(title: "확인", style: .default)
             
-            answerLabel.text = value
+            alert.addAction(cancel)
+            alert.addAction(ok)
+            
+            present(alert, animated: true)
+            
+        } else if question.keys.contains(title) {
+            answerLabel.text = title
         } else {
             answerLabel.text = "없는 문제입니다."
         }
@@ -58,20 +70,33 @@ class CoinedWordViewController: UIViewController {
     }
     
     @IBAction func buttonPressed(_ sender: UIButton) {
-        
+
         answerImageView.image = UIImage(named: "background")
+
+        guard let title = searchTextField.text else {
+            return
+        }
         
-        if let value = question[searchTextField.text!] {
+        if title == "" || title.count <= 1{
+            let alert = UIAlertController(title: "두 글자 이상 입력해주세요.", message: nil, preferredStyle: .alert)
+            let cancel = UIAlertAction(title: "취소", style: .cancel)
+            let ok = UIAlertAction(title: "확인", style: .default)
             
-            answerLabel.text = value
+            alert.addAction(cancel)
+            alert.addAction(ok)
+            
+            present(alert, animated: true)
+            
+        } else if question.keys.contains(title) {
+            answerLabel.text = title
         } else {
             answerLabel.text = "없는 문제입니다."
         }
         
-        
         searchTextField.text = ""
-        view.endEditing(true)
         
+        view.endEditing(true)
+
     }
     
     @IBAction func quizButtonPressed(_ sender: UIButton) {
@@ -93,33 +118,26 @@ class CoinedWordViewController: UIViewController {
     func setQuizButton() {
         
         var quizArray = question.keys.map{String($0)}
+        var quizIndex = 0
         
-        //print(quizArray)
-        
+        quizArray.shuffle()
+                
         for quiz in quizButton {
-            
-            if !quizArray.isEmpty {
-                //print(quizArray)
-                
-                let title = quizArray.randomElement()
-                let index = quizArray.firstIndex(of: title!)
-                
-                quiz.setTitle(title, for: .normal)
-                quiz.setTitleColor(.black, for: .normal)
-                
-                quiz.layer.borderColor = UIColor.black.cgColor
-                quiz.layer.borderWidth = 0.5
-                quiz.layer.cornerRadius = 5
-                
-                quizArray.remove(at: index!)
+
+            if quiz.tag <= quizArray.count {
+                quizIndex = quiz.tag - 1
             } else {
                 quiz.isHidden = true
             }
-
+                        
+            quiz.setTitle(quizArray[quizIndex], for: .normal)
+            quiz.setTitleColor(.black, for: .normal)
             
+            quiz.layer.borderColor = UIColor.black.cgColor
+            quiz.layer.borderWidth = 0.5
+            quiz.layer.cornerRadius = 5
+                        
             //quiz.titleLabel?.font = .systemFont(ofSize: 50) 적용이 안됨..
-            
-            
             
         }
         
